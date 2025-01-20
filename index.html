@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARCADE GAMES</title>
+    <style>
+        :root {
+            --primary: #ffffff;
+            --accent1: #ffffff;    /* 흰색 */
+            --accent2: #f0f0f0;    /* 연한 회색 */
+            --accent3: #e0e0e0;    /* 밝은 회색 */
+            --accent4: #ffffff;    /* 흰색 */
+            --accent5: #f5f5f5;    /* 매우 연한 회색 */
+            --bg: #0a0a0a;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --text: #ffffff;
+            --text-secondary: #b3b3b3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Press Start 2P', system-ui, sans-serif;
+            user-select: none;  /* 텍스트 선택 방지 */
+            -webkit-user-select: none;  /* Safari용 */
+            -moz-user-select: none;     /* Firefox용 */
+            -ms-user-select: none;      /* IE용 */
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            background: #0a0a0a;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: var(--card-bg);
+            padding: 4rem;
+            border-radius: 2rem;
+            border: 2px solid var(--primary);
+            box-shadow: 
+                0 0 20px var(--accent1),
+                0 0 40px var(--accent2),
+                0 0 60px var(--accent3);
+        }
+
+        .title {
+            font-size: 3.5rem;
+            margin-bottom: 4rem;
+            background: linear-gradient(
+                45deg, 
+                var(--accent1),
+                var(--accent2),
+                var(--accent3),
+                var(--accent4),
+                var(--accent5)
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow 5s linear infinite;
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .games {
+            display: flex;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .game-card {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            width: 350px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid var(--accent1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+            animation: neonPulse 1.5s infinite;
+        }
+
+        .game-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent4);
+            text-shadow: 0 0 10px var(--accent4);
+        }
+
+        .game-description {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            font-size: 0.9rem;
+            user-select: text;  /* 게임 설명은 선택 가능하게 */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+        }
+
+        .play-btn {
+            background: transparent;
+            color: var(--accent1);
+            border: 2px solid var(--accent1);
+            padding: 1rem 2.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        .play-btn:hover {
+            background: var(--accent1);
+            color: var(--bg);
+            box-shadow: 
+                0 0 20px var(--accent1),
+                0 0 40px var(--accent2);
+            transform: scale(1.05);
+        }
+
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 5px var(--accent1), 0 0 10px var(--accent2); }
+            50% { box-shadow: 0 0 20px var(--accent3), 0 0 30px var(--accent4); }
+            100% { box-shadow: 0 0 5px var(--accent1), 0 0 10px var(--accent2); }
+        }
+
+        .game-card:hover .play-btn {
+            animation: neonPulse 1.5s infinite;
+        }
+
+        /* 텍스트 선택 시 스타일 */
+        ::selection {
+            background: transparent;
+            text-shadow: 0 0 10px var(--accent1);
+        }
+
+        /* Firefox용 텍스트 선택 스타일 */
+        ::-moz-selection {
+            background: transparent;
+            text-shadow: 0 0 10px var(--accent1);
+        }
+
+        /* AIM TRAINER 호버 효과 */
+        .game-card:first-child:hover {
+            border-color: #ff0000;
+            box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+            animation: redNeonPulse 1.5s infinite;
+        }
+
+        /* NUMBER GUESS 호버 효과 */
+        .game-card:last-child:hover {
+            box-shadow: 
+                0 0 20px #9900ff,
+                0 0 40px #00ffff;
+            animation: purpleCyanNeonPulse 1.5s infinite;
+        }
+
+        @keyframes redNeonPulse {
+            0% { box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; }
+            50% { box-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000; }
+            100% { box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; }
+        }
+
+        @keyframes purpleCyanNeonPulse {
+            0% { 
+                box-shadow: 
+                    0 0 5px #9900ff,
+                    0 0 10px #00ffff; 
+            }
+            50% { 
+                box-shadow: 
+                    0 0 20px #9900ff,
+                    0 0 30px #00ffff; 
+            }
+            100% { 
+                box-shadow: 
+                    0 0 5px #9900ff,
+                    0 0 10px #00ffff; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">ARCADE GAMES</h1>
+        <div class="games">
+            <div class="game-card" onclick="location.href='target_game.html'" style="margin: 0 auto; height: 200px; width: 350px; display: flex; flex-direction: column; border: 2px solid #ff0000;">
+                <h2 class="game-title" style="color: #ff0000; text-shadow: 0 0 10px #ff0000;">AIM TRAINER</h2>
+                <p class="game-description">
+                    정확도와 반응속도를 테스트하는 에임 트레이닝 게임입니다. 
+                    다양한 난이도와 설정으로 실력을 향상시켜보세요.
+                </p>
+            </div>
+            <div class="game-card" onclick="location.href='rrr.html'" style="height: 200px; width: 350px; display: flex; flex-direction: column; background: linear-gradient(45deg, #9900ff, #00ffff); border-radius: 1rem; padding: 2px; border: none;">
+                <div style="background: var(--card-bg); height: 100%; border-radius: 0.9rem; padding: 2.5rem;">
+                    <h2 class="game-title" style="background: linear-gradient(45deg, #9900ff, #00ffff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 10px rgba(153, 0, 255, 0.7);">NUMBER GUESS</h2>
+                    <p class="game-description">
+                        숨겨진 숫자를 추리하는 두뇌 게임입니다.
+                        최소한의 시도로 정답을 맞춰보세요.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전체화면 관련 스크립트 제거
+    </script>
+</body>
+</html>
