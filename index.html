@@ -3,1286 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>블록 브레이커</title>
-    <!-- 구글 폰트 추가 -->
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>ARCADE GAMES</title>
     <style>
         :root {
-            --primary: #00ff9f;
-            --accent: #00ff9f;
+            --primary: #ffffff;
+            --accent1: #ffffff;    /* 흰색 */
+            --accent2: #f0f0f0;    /* 연한 회색 */
+            --accent3: #e0e0e0;    /* 밝은 회색 */
+            --accent4: #ffffff;    /* 흰색 */
+            --accent5: #f5f5f5;    /* 매우 연한 회색 */
             --bg: #0a0a0a;
-            --neon-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --text: #ffffff;
+            --text-secondary: #b3b3b3;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Rajdhani', sans-serif;  /* 폰트만 변경 */
-            user-select: none;
+            font-family: 'Press Start 2P', system-ui, sans-serif;
+            user-select: none;  /* 텍스트 선택 방지 */
+            -webkit-user-select: none;  /* Safari용 */
+            -moz-user-select: none;     /* Firefox용 */
+            -ms-user-select: none;      /* IE용 */
         }
+
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
         body {
-            background-color: var(--bg);
+            background: #0a0a0a;
+            color: var(--text);
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            font-family: 'Press Start 2P', monospace;
             overflow: hidden;
-            color: white;
         }
 
-        #gameCanvas {
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 20px rgba(0, 255, 159, 0.3);
-            background-color: rgba(10, 10, 10, 0.9);
-            background-image: 
-                linear-gradient(rgba(0, 255, 159, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 159, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        #score {
-            font-size: 24px;
-            margin: 20px 0;
-            text-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
-        }
-
-        .game-over {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-        }
-
-        .game-over-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .container {
             text-align: center;
-            color: #00ff9f;
+            background: var(--card-bg);
+            padding: 4rem;
+            border-radius: 3rem;
+            border: 2px solid;
+            border-radius: 3rem;
+            background: linear-gradient(
+                45deg, 
+                #ff0000,
+                #9900ff,
+                #00ffff,
+                #00ff9f,
+                #ff0000
+            );
+            border: double 2px transparent;
+            background-image: linear-gradient(
+                145deg,
+                rgba(20, 20, 20, 0.95),
+                rgba(30, 30, 30, 0.95)
+            ), linear-gradient(
+                45deg, 
+                #ff0000,
+                #9900ff,
+                #00ffff,
+                #00ff9f,
+                #ff0000
+            );
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.3),
+                0 0 40px rgba(153, 0, 255, 0.3),
+                0 0 60px rgba(0, 255, 255, 0.3),
+                0 0 80px rgba(0, 255, 159, 0.3);
+            animation: containerGlow 8s linear infinite;
         }
 
-        .game-over h2 {
-            font-size: 56px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(0, 255, 159, 0.5);
+        @keyframes containerGlow {
+            0% {
+                box-shadow: 
+                    0 0 20px rgba(255, 0, 0, 0.3),
+                    0 0 40px rgba(153, 0, 255, 0.3);
+            }
+            25% {
+                box-shadow: 
+                    0 0 20px rgba(153, 0, 255, 0.3),
+                    0 0 40px rgba(0, 255, 255, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 20px rgba(0, 255, 255, 0.3),
+                    0 0 40px rgba(0, 255, 159, 0.3);
+            }
+            75% {
+                box-shadow: 
+                    0 0 20px rgba(0, 255, 159, 0.3),
+                    0 0 40px rgba(255, 0, 0, 0.3);
+            }
+            100% {
+                box-shadow: 
+                    0 0 20px rgba(255, 0, 0, 0.3),
+                    0 0 40px rgba(153, 0, 255, 0.3);
+            }
         }
 
-        .game-over p {
-            font-size: 32px;
-            font-weight: 600;
+        .title {
+            font-size: 3.5rem;
+            margin-bottom: 4rem;
+            background: linear-gradient(
+                45deg, 
+                #ff0000,
+                #9900ff,
+                #00ffff,
+                #00ff9f,
+                #ff0000
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titleRainbow 8s linear infinite;
+            letter-spacing: 5px;
         }
 
-        .game-over button {
-            background: #00ff9f;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            color: #0a0a0a;
-            cursor: pointer;
-            font-family: 'Press Start 2P', monospace;
-            margin-top: 20px;
-            box-shadow: 0 0 15px rgba(0, 255, 159, 0.5);
+        @keyframes titleRainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
         }
 
-        .pause-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-        }
-
-        .pause-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #00ff9f;
-            text-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
-        }
-
-        .pause-content h2 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        #gameInfo {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+        .games {
             display: flex;
-            align-items: center;  /* 수직 중앙 정렬 */
-            gap: 50px;
-            font-size: 24px;
-            color: #00ff9f;
-            text-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
-            z-index: 1001;
-            pointer-events: none;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            background: rgba(10, 10, 10, 0.7);
-            padding: 10px 20px;
-            border: 2px solid #00ff9f;
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgba(0, 255, 159, 0.3);
-            white-space: nowrap;  /* 줄바꿈 방지 */
+            gap: 3rem;
+            margin-top: 2rem;
         }
 
-        #gameInfo div {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            line-height: 1;  /* 줄 높이 조정 */
-            display: inline-block;  /* 인라인 블록으로 변경 */
-            vertical-align: middle;  /* 수직 정렬 */
-        }
-
-        #score, #combo, #level {
-            text-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
-        }
-
-        .menu-screen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            background: rgba(10, 10, 10, 0.9);
-            padding: 2rem;
-            border-radius: 10px;
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 20px rgba(0, 255, 159, 0.3);
-            z-index: 1000;
-        }
-
-        .menu-screen h2 {
-            font-size: 56px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 40px;
-            text-shadow: 0 0 20px rgba(0, 255, 159, 0.5);
-        }
-
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .menu-btn, .game-over button {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            padding: 15px 30px;
-            font-size: 28px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Rajdhani', sans-serif;
-            border-radius: 5px;
-            min-width: 250px;
-        }
-
-        .menu-btn:hover, .game-over button:hover {
-            background: var(--primary);
-            color: var(--bg);
-            box-shadow: 0 0 20px rgba(0, 255, 159, 0.5);
-        }
-
-        .controls-screen {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            background: rgba(10, 10, 10, 0.9);
-            padding: 2rem;
-            border-radius: 10px;
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 20px rgba(0, 255, 159, 0.3);
-        }
-
-        .controls-screen h3 {
-            font-size: 42px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 30px;
-        }
-
-        .controls-screen p {
-            font-size: 28px;
-            font-weight: 600;
-            color: white;
-            margin: 15px 0;
-            text-align: left;
-        }
-
-        .key {
-            color: var(--primary);
-            text-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
-        }
-
-        .blur-background {
-            filter: blur(5px);
-            pointer-events: none;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            color: #00ff9f;  /* 초록색으로 변경 */
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: 700;
-            padding: 5px 10px;
-            text-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
-        }
-
-        .close-btn:hover {
-            text-shadow: 0 0 20px rgba(0, 255, 159, 0.8);
-        }
-
-        .settings-panel {
-            position: fixed;
-            top: 0;
-            right: -300px; /* 처음에는 화면 밖에 위치 */
-            width: 300px;
-            height: 100vh;
-            background: rgba(20, 20, 20, 0.95);
-            padding: 2rem;
-            transition: right 0.3s ease; /* 부드러운 슬라이드 효과 */
-            z-index: 1000;
-            border-left: 1px solid var(--primary);
-            backdrop-filter: blur(15px);
-            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .settings-panel.active {
-            right: 0; /* 활성화되면 화면에 표시 */
-            display: block;
-        }
-
-        .settings-group {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .settings-title {
-            color: var(--primary);
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .color-preview {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin: 10px auto;
-            border: 2px solid var(--primary);
-        }
-
-        .volume-control {
-            width: 100%;
-            margin: 10px 0;
-        }
-
-        #overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        .game-card {
             background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            display: none;
-            z-index: 999;
-        }
-
-        #overlay.active {
-            display: block;
-        }
-
-        .menu-screen .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .fullscreen-btn {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            padding: 10px 20px;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            width: 350px;
+            transition: all 0.3s ease;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
+            border: 2px solid var(--accent1);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* 마우스 포인터 숨김 클래스 */
-        .hide-cursor {
-            cursor: none !important;
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+            animation: neonPulse 1.5s infinite;
         }
 
-        /* 버튼과 설정 패널에서는 커서 보이게 설정 */
-        .menu-btn:hover,
-        .settings-panel,
-        .settings-panel *,
-        .menu-screen,
-        .menu-screen * {
-            cursor: pointer;
+        .game-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent4);
+            text-shadow: 0 0 10px var(--accent4);
         }
 
-        .game-over-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
+        .game-description {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            font-size: 0.9rem;
+            user-select: text;  /* 게임 설명은 선택 가능하게 */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
         }
 
-        .game-over-buttons button {
+        .play-btn {
             background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            padding: 15px 30px;
-            font-size: 24px;
-            font-weight: 700;
+            color: var(--accent1);
+            border: 2px solid var(--accent1);
+            padding: 1rem 2.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: 'Rajdhani', sans-serif;
-            min-width: 150px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            white-space: nowrap;
         }
 
-        .game-over-buttons button:hover {
-            background: var(--primary);
+        .play-btn:hover {
+            background: var(--accent1);
             color: var(--bg);
-            box-shadow: 0 0 20px rgba(0, 255, 159, 0.5);
+            box-shadow: 
+                0 0 20px var(--accent1),
+                0 0 40px var(--accent2);
+            transform: scale(1.05);
+        }
+
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 5px var(--accent1), 0 0 10px var(--accent2); }
+            50% { box-shadow: 0 0 20px var(--accent3), 0 0 30px var(--accent4); }
+            100% { box-shadow: 0 0 5px var(--accent1), 0 0 10px var(--accent2); }
+        }
+
+        .game-card:hover .play-btn {
+            animation: neonPulse 1.5s infinite;
+        }
+
+        /* 텍스트 선택 시 스타일 */
+        ::selection {
+            background: transparent;
+            text-shadow: 0 0 10px var(--accent1);
+        }
+
+        /* Firefox용 텍스트 선택 스타일 */
+        ::-moz-selection {
+            background: transparent;
+            text-shadow: 0 0 10px var(--accent1);
+        }
+
+        /* AIM TRAINER 호버 효과 */
+        .game-card:first-child {
+            border: 2px solid #ff0000;
+        }
+        .game-card:first-child:hover {
+            border-color: #ff0000;
+            box-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000;
+            animation: redNeonPulse 1.5s infinite;
+        }
+
+        /* NUMBER GUESS 호버 효과 */
+        .game-card:nth-child(2) {
+            background: linear-gradient(45deg, #9900ff, #00ffff);
+            padding: 2px;
+            border: none;
+        }
+        .game-card:nth-child(2):hover {
+            box-shadow: 0 0 15px #9900ff, 0 0 30px #00ffff;
+            animation: purpleCyanNeonPulse 1.5s infinite;
+        }
+
+        /* BLOCK BREAKER 호버 효과 */
+        .game-card:nth-child(3) {
+            background: linear-gradient(45deg, #00ff9f, #00ffcc);
+            padding: 2px;
+            border: none;
+        }
+        .game-card:nth-child(3):hover {
+            box-shadow: 0 0 15px #00ff9f, 0 0 30px #00ffcc;
+            animation: greenNeonPulse 1.5s infinite;
+        }
+
+        @keyframes redNeonPulse {
+            0% { box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; }
+            50% { box-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000; }
+            100% { box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; }
+        }
+
+        @keyframes purpleCyanNeonPulse {
+            0% { box-shadow: 0 0 5px #9900ff, 0 0 10px #00ffff; }
+            50% { box-shadow: 0 0 15px #9900ff, 0 0 30px #00ffff; }
+            100% { box-shadow: 0 0 5px #9900ff, 0 0 10px #00ffff; }
+        }
+
+        @keyframes greenNeonPulse {
+            0% { box-shadow: 0 0 5px #00ff9f, 0 0 10px #00ffcc; }
+            50% { box-shadow: 0 0 15px #00ff9f, 0 0 30px #00ffcc; }
+            100% { box-shadow: 0 0 5px #00ff9f, 0 0 10px #00ffcc; }
         }
     </style>
 </head>
 <body>
-    <div class="menu-screen" id="menuScreen">
-        <h2>BLOCK BREAKER</h2>
-        <div class="menu-buttons">
-            <button id="startGameBtn" class="menu-btn" onclick="startGame()">START GAME</button>
-            <button id="backToMenuBtn" class="menu-btn" onclick="location.href='index.html'">BACK TO MENU</button>
-        </div>
-    </div>
-    <div id="gameInfo">
-        <div id="score">SCORE: <span>0</span></div>
-        <div id="combo">COMBO: <span>0</span>x</div>
-        <div id="level">LEVEL: <span>1</span></div>
-    </div>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div class="game-over">
-        <div class="game-over-content">
-            <h2>GAME OVER</h2>
-            <p>FINAL SCORE: <span id="finalScore">0</span></p>
-            <div class="game-over-buttons">
-                <button onclick="window.resetGame()">RESTART</button>
-                <button onclick="location.href='ridem.html'">MENU</button>
+    <div class="container">
+        <h1 class="title">ARCADE GAMES</h1>
+        <div class="games">
+            <div class="game-card" onclick="location.href='target_game.html'" style="height: 200px; width: 350px; display: flex; flex-direction: column; background: linear-gradient(45deg, #ff0000, #ff3333); border-radius: 1rem; padding: 2px; border: none;">
+                <div style="background: var(--card-bg); height: 100%; border-radius: 0.9rem; padding: 2.5rem;">
+                    <h2 class="game-title" style="color: #ff0000; text-shadow: 0 0 10px #ff0000;">AIM TRAINER</h2>
+                    <p class="game-description">
+                        정확도와 반응속도를 테스트하는 에임 트레이닝 게임입니다. 
+                        다양한 난이도와 설정으로 실력을 향상시켜보세요.
+                    </p>
+                </div>
+            </div>
+            <div class="game-card" onclick="location.href='rrr.html'" style="height: 200px; width: 350px; display: flex; flex-direction: column; background: linear-gradient(45deg, #9900ff, #00ffff); border-radius: 1rem; padding: 2px; border: none;">
+                <div style="background: var(--card-bg); height: 100%; border-radius: 0.9rem; padding: 2.5rem;">
+                    <h2 class="game-title" style="
+                        background: linear-gradient(45deg, #9900ff, #00ffff);
+                        -webkit-background-clip: text;
+                        background-clip: text;
+                        color: transparent;
+                        text-shadow: 
+                            0 0 10px rgba(153, 0, 255, 0.5),
+                            0 0 15px rgba(0, 255, 255, 0.5);">NUMBER GUESS</h2>
+                    <p class="game-description">
+                        1부터 100까지의 숫자 중 하나를 맞추는 추리 게임입니다.
+                        힌트를 활용해 최소한의 시도로 도전해보세요!
+                    </p>
+                </div>
+            </div>
+            <div class="game-card" onclick="location.href='ridem.html'" style="height: 200px; width: 350px; display: flex; flex-direction: column; background: linear-gradient(45deg, #00ff9f, #00ffcc); border-radius: 1rem; padding: 2px; border: none;">
+                <div style="background: var(--card-bg); height: 100%; border-radius: 0.9rem; padding: 2.5rem;">
+                    <h2 class="game-title" style="color: #00ff9f; text-shadow: 0 0 10px #00ff9f;">BLOCK BREAKER</h2>
+                    <p class="game-description">
+                        패들을 움직여 공을 튕겨내며 블록을 파괴하는 게임입니다.
+                        모든 블록을 제거하고 최고 점수에 도전하세요!
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="pause-screen">
-        <div class="pause-content">
-            <h2>PAUSED</h2>
-            <p>Press SPACE to continue</p>
-        </div>
-    </div>
-
-    <div id="overlay"></div>
-    <div id="settingsPanel" class="settings-panel">
-        <h2 class="settings-title">SETTINGS</h2>
-        
-        <div class="settings-group">
-            <h3>Block Color</h3>
-            <div id="colorPreview" class="color-preview"></div>
-            <input type="range" id="redSlider" min="0" max="255" value="0" oninput="updateColorSettings()">
-            <input type="range" id="greenSlider" min="0" max="255" value="255" oninput="updateColorSettings()">
-            <input type="range" id="blueSlider" min="0" max="255" value="159" oninput="updateColorSettings()">
-            <p id="colorValue">#00FF9F</p>
-        </div>
-        
-        <div class="settings-group">
-            <h3>Sound Volume</h3>
-            <input type="range" id="volumeControl" min="0" max="100" value="50" oninput="updateVolumeSettings()">
-            <p>Volume: <span id="volumeValue">50</span>%</p>
-        </div>
-
-        <button class="menu-btn" onclick="toggleFullscreen()" id="fullscreenBtn">FULLSCREEN</button>
-        <button class="menu-btn" onclick="closeSettings()">CLOSE</button>
-    </div>
-
-    <button id="settingsBtn" class="menu-btn" onclick="openSettings()" style="position: fixed; top: 20px; right: 20px;">
-        SETTINGS
-    </button>
-
-    <script>
-        // 게임 캔버스 설정
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // 게임 상태 변수들
-        let score = 0;
-        let combo = 0;
-        let gameRunning = false;
-        let isPaused = false;
-        let animationId = null;
-        let currentLevel = 1;
-        let gameProgress = 1;
-        let availableLevels = [];
-
-        // UI 요소 참조
-        const scoreElement = document.querySelector('#score span');
-        const comboElement = document.querySelector('#combo span');
-        const levelElement = document.querySelector('#level span');
-        const gameOverScreen = document.querySelector('.game-over');
-        const pauseScreen = document.querySelector('.pause-screen');
-        const finalScoreElement = document.getElementById('finalScore');
-
-        // 패들 설정
-        const paddle = {
-            width: 100,
-            height: 10,
-            x: canvas.width / 2 - 50,
-            y: canvas.height - 20,
-            speed: 8,
-            color: '#00ff9f'
-        };
-
-        // 공의 기본 속도 상수 수정
-        const BALL_INITIAL_SPEED = 5;
-        const BALL_INITIAL_DY = 4;   // 초기 수직 속도
-
-        // 공 초기화 함수 수정
-        function initializeBall() {
-            return {
-                x: canvas.width / 2,
-                y: canvas.height / 2,
-                size: 8,
-                speed: BALL_INITIAL_SPEED,  // 기본 속도만 사용
-                dx: 0,
-                dy: BALL_INITIAL_DY,  // 고정된 수직 속도 사용
-                color: '#00ff9f'
-            };
-        }
-
-        // 공 배열 초기화 부분도 수정
-        let balls = [{
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            size: 8,
-            speed: BALL_INITIAL_SPEED,  // 기본 속도만 사용
-            dx: 0,
-            dy: BALL_INITIAL_DY,  // 고정된 수직 속도 사용
-            color: '#00ff9f'
-        }];
-
-        // 벽돌 설정
-        const brickRowCount = 5;
-        const brickColumnCount = 8;
-        const brickWidth = 80;
-        const brickHeight = 20;
-        const brickPadding = 10;
-        const brickOffsetTop = 30;
-        // 가운데 정렬을 위한 왼쪽 여백 계산
-        const totalBrickWidth = (brickWidth + brickPadding) * brickColumnCount - brickPadding;
-        const brickOffsetLeft = (canvas.width - totalBrickWidth) / 2;
-
-        // 콤보 시스템
-        let lastHitTime = 0;
-        const comboTimeout = 2000;
-
-        // 파티클 시스템
-        let particles = [];
-        let comboTexts = [];
-
-        // 벽돌 배열 생성
-        const bricks = [];
-        let maxLevel = 100;
-
-        // levelPatterns 객체 수정
-        const levelPatterns = {
-            // 기본 패턴 (1레벨)
-            1: [
-                [1,1,1,1,1,1,1,1],
-                [1,1,1,1,1,1,1,1],
-                [1,1,1,1,1,1,1,1],
-                [0,1,1,1,1,1,1,0],
-                [0,0,1,1,1,1,0,0]
-            ],
-            
-            // 패턴 가져오기 메서드
-            get: function(level) {
-                // 미리 정의된 패턴이 있으면 사용
-                if(this[level]) {
-                    return this[level];
-                }
-                // 없으면 새로운 패턴 생성
-                return generateLevelPattern(level);
-            }
-        };
-
-        // 레벨 패턴 생성 함수
-        function generateLevelPattern(level) {
-            let pattern = Array(brickRowCount).fill().map(() => Array(brickColumnCount).fill(0));
-            
-            // 레벨이 올라갈수록 블록 배치가 더 복잡해지고 빈칸이 적어짐
-            const fillProbability = Math.min(0.3 + (level / 100) * 0.5, 0.9);
-            
-            // 최소 블록 수 계산 (레벨이 올라갈수록 증가)
-            const minBlocks = Math.min(5 + Math.floor(level / 10), 30);
-            
-            // 패턴 생성
-            for(let r = 0; r < brickRowCount; r++) {
-                for(let c = 0; c < brickColumnCount; c++) {
-                    if(Math.random() < fillProbability) {
-                        pattern[r][c] = 1;
-                    }
-                }
-            }
-            
-            // 최소 블록 수 보장
-            let blockCount = pattern.flat().filter(x => x === 1).length;
-            while(blockCount < minBlocks) {
-                const r = Math.floor(Math.random() * brickRowCount);
-                const c = Math.floor(Math.random() * brickColumnCount);
-                if(pattern[r][c] === 0) {
-                    pattern[r][c] = 1;
-                    blockCount++;
-                }
-            }
-            
-            return pattern;
-        }
-
-        // 초록계열 색상 배열 추가
-        const greenColors = [
-            '#00ff9f', // 기존 네온 그린
-            '#32CD32', // 라임 그린
-            '#98FB98', // 페일 그린
-            '#00FA9A', // 미디엄 스프링 그린
-            '#3CB371', // 미디엄 씨 그린
-            '#2E8B57', // 씨 그린
-            '#00FF7F', // 스프링 그린
-            '#7FFF00'  // 차트리우스
-        ];
-
-        // 색상 관련 함수 수정
-        function getRandomColorInRange(baseColor) {
-            const [r, g, b] = baseColor;
-            const variance = 80; // 색상 변화 범위를 30에서 80으로 증가
-            
-            return [
-                Math.min(255, Math.max(0, r + (Math.random() - 0.5) * variance)),
-                Math.min(255, Math.max(0, g + (Math.random() - 0.5) * variance)),
-                Math.min(255, Math.max(0, b + (Math.random() - 0.5) * variance))
-            ];
-        }
-
-        // 사용 가능한 레벨 초기화 함수
-        function initializeAvailableLevels() {
-            availableLevels = Array.from({length: 100}, (_, i) => i + 1); // 1부터 100까지의 배열 생성
-        }
-
-        // 랜덤 레벨 선택 함수 수정
-        function getRandomLevel() {
-            if (availableLevels.length === 0) {
-                // 모든 레벨을 클리어했을 때 다시 초기화
-                initializeAvailableLevels();
-            }
-            const randomIndex = Math.floor(Math.random() * availableLevels.length);
-            const selectedLevel = availableLevels[randomIndex];
-            // 선택된 레벨을 배열에서 제거
-            availableLevels.splice(randomIndex, 1);
-            return selectedLevel;
-        }
-
-        // 다음 레벨로 진행 함수 수정
-        function nextLevel() {
-            gameProgress++;
-            const nextRandomLevel = getRandomLevel();
-            currentLevel = nextRandomLevel;
-            
-            // 블록만 초기화
-            initializeBricks(currentLevel);
-            
-            // 레벨 표시 업데이트
-            levelElement.textContent = gameProgress;
-        }
-
-        // 레벨 리셋 함수 수정
-        function resetLevel() {
-            // 블록만 초기화
-            initializeBricks(currentLevel);
-            
-            // 레벨 표시 업데이트
-            levelElement.textContent = gameProgress;
-        }
-
-        // 게임 리셋 함수는 그대로 유지 (전체 초기화가 필요할 때 사용)
-        function resetGame() {
-            score = 0;
-            combo = 0;
-            gameProgress = 1;
-            gameRunning = true;
-            isPaused = false;
-            
-            // 사용 가능한 레벨 초기화
-            initializeAvailableLevels();
-            currentLevel = getRandomLevel();
-            
-            // 공 초기화
-            balls = [initializeBall()];
-            
-            // 패들 초기화
-            paddle.x = (canvas.width - paddle.width) / 2;
-            
-            // 파티클 초기화
-            particles = [];
-            comboTexts = [];
-            
-            // UI 업데이트
-            updateGameUI();
-            
-            // 화면 초기화
-            gameOverScreen.style.display = 'none';
-            pauseScreen.style.display = 'none';
-            
-            // 블록 초기화
-            initializeBricks(currentLevel);
-            
-            // 애니메이션 재시작
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-            }
-            animationId = requestAnimationFrame(update);
-        }
-
-        // 게임 오버
-        function gameOver() {
-            if(!gameRunning) return;  // 이미 게임 오버 상태면 무시
-            
-            gameRunning = false;
-            gameOverScreen.style.display = 'block';
-            finalScoreElement.textContent = score;
-            
-            if(animationId) {
-                cancelAnimationFrame(animationId);
-                animationId = null;
-            }
-        }
-
-        // 승리 화면 함수 수정
-        function showVictoryScreen() {
-            gameRunning = false;
-            gameOverScreen.style.display = 'flex';
-            gameOverScreen.querySelector('.game-over-content').innerHTML = `
-                <h2>축하합니다!</h2>
-                <p>모든 레벨을 클리어하셨습니다!</p>
-                <p>최종 점수: <span>${score}</span></p>
-                <button onclick="window.resetGame()">다시 시작</button>
-            `;
-        }
-
-        // 일시정지 토글
-        function togglePause() {
-            if (!gameRunning) return;
-            
-            isPaused = !isPaused;
-            if (isPaused) {
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
-                pauseScreen.style.display = 'block';
-                document.getElementById('gameCanvas').classList.add('blur-background');
-            } else {
-                if (!animationId) {
-                    animationId = requestAnimationFrame(update);
-                }
-                pauseScreen.style.display = 'none';
-                document.getElementById('gameCanvas').classList.remove('blur-background');
-            }
-        }
-
-        // 키보드 이벤트
-        let rightPressed = false;
-        let leftPressed = false;
-
-        document.addEventListener('keydown', (e) => {
-            if(e.key === 'Right' || e.key === 'ArrowRight') {
-                rightPressed = true;
-            }
-            if(e.key === 'Left' || e.key === 'ArrowLeft') {
-                leftPressed = true;
-            }
-            if(e.code === 'Space' && gameRunning && !e.repeat) {
-                togglePause();
-            }
-            if (e.key === 'Escape') {
-                if (document.getElementById('settingsPanel').classList.contains('active')) {
-                    closeSettings();
-                } 
-                else if (gameRunning) {
-                    isPaused = !isPaused;
-                    
-                    if (isPaused) {
-                        cancelAnimationFrame(animationId);
-                        document.getElementById('menuScreen').style.display = 'block';
-                        document.getElementById('overlay').style.display = 'block';
-                        document.getElementById('gameCanvas').classList.add('blur-background');
-                    } else {
-                        document.getElementById('menuScreen').style.display = 'none';
-                        document.getElementById('overlay').style.display = 'none';
-                        document.getElementById('gameCanvas').classList.remove('blur-background');
-                        animationId = requestAnimationFrame(update);
-                    }
-                }
-            }
-            if (e.key.toLowerCase() === 's') {
-                if (document.getElementById('settingsPanel').classList.contains('active')) {
-                    closeSettings();
-                } else {
-                    openSettings();
-                }
-            }
-        });
-
-        document.addEventListener('keyup', function(e) {
-            if(e.key === 'Right' || e.key === 'ArrowRight') {
-                rightPressed = false;
-            }
-            if(e.key === 'Left' || e.key === 'ArrowLeft') {
-                leftPressed = false;
-            }
-            if(e.code === 'Space' && gameRunning) {
-                // 스페이스바 keyup 이벤트에서 togglePause 제거
-            }
-        });
-
-        // 새로운 공 생성
-        function createNewBall(x, y) {
-            balls.push({
-                x: x,
-                y: y,
-                size: 8,
-                speed: 5,
-                dx: Math.random() * 8 - 4,
-                dy: -5,
-                color: '#00ff9f'
-            });
-        }
-
-        // 파티클 생성
-        function createParticles(x, y, color) {
-            for(let i = 0; i < 10; i++) {
-                particles.push({
-                    x: x,
-                    y: y,
-                    dx: (Math.random() - 0.5) * 8,
-                    dy: (Math.random() - 0.5) * 8,
-                    radius: Math.random() * 3,
-                    color: color,
-                    alpha: 1
-                });
-            }
-        }
-
-        // 파티클 업데이트
-        function updateParticles() {
-            for(let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.dx;
-                p.y += p.dy;
-                p.alpha -= 0.02;
-
-                if(p.alpha <= 0) {
-                    particles.splice(i, 1);
-                }
-            }
-        }
-
-        // 콤보 텍스트 생성
-        function createComboText(x, y, text) {
-            comboTexts.push({
-                x: x,
-                y: y,
-                text: text,
-                alpha: 1,
-                dy: -2
-            });
-        }
-
-        // 콤보 텍스트 업데이트
-        function updateComboTexts() {
-            for(let i = comboTexts.length - 1; i >= 0; i--) {
-                const text = comboTexts[i];
-                text.y += text.dy;
-                text.alpha *= 0.95;
-                if(text.alpha <= 0.01) {
-                    comboTexts.splice(i, 1);
-                }
-            }
-        }
-
-        // 그리기 함수들
-        function drawBall() {
-            balls.forEach(ball => {
-                ctx.beginPath();
-                ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
-                ctx.fillStyle = ball.color;
-                ctx.fill();
-                ctx.closePath();
-
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = ball.color;
-            });
-        }
-
-        function drawPaddle() {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = paddle.color;
-            ctx.fillStyle = paddle.color;
-            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-        }
-
-        function drawBricks() {
-            for(let c = 0; c < brickColumnCount; c++) {
-                for(let r = 0; r < brickRowCount; r++) {
-                    if(bricks[c][r] && bricks[c][r].status === 1) {
-                        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-                        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-                        
-                        ctx.beginPath();
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = bricks[c][r].color;
-                        ctx.fillStyle = bricks[c][r].color;
-                        ctx.fillRect(brickX, brickY, brickWidth, brickHeight);
-                        ctx.closePath();
-                    }
-                }
-            }
-        }
-
-        function drawParticles() {
-            particles.forEach(p => {
-                ctx.save();
-                ctx.globalAlpha = p.alpha;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-                ctx.restore();
-            });
-        }
-
-        function drawComboTexts() {
-            comboTexts.forEach(text => {
-                ctx.save();
-                ctx.globalAlpha = text.alpha;
-                ctx.font = '20px "Press Start 2P"';
-                ctx.fillStyle = '#00ff9f';
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#00ff9f';
-                ctx.fillText(text.text, text.x - 20, text.y);
-                ctx.restore();
-            });
-        }
-
-        // 오디오 컨텍스트 생성
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioContext();
-        
-        // 전역 볼륨 컨트롤을 위한 마스터 게인 노드 생성
-        const masterGainNode = audioCtx.createGain();
-        masterGainNode.connect(audioCtx.destination);
-        masterGainNode.gain.setValueAtTime(0.5, audioCtx.currentTime); // 기본값 50%
-
-        // 블록 히트 사운드 함수
-        function createHitSound() {
-            // 메인 임팩트 사운드
-            const oscillator1 = audioCtx.createOscillator();
-            const gainNode1 = audioCtx.createGain();
-            
-            oscillator1.connect(gainNode1);
-            gainNode1.connect(masterGainNode);
-            
-            oscillator1.type = 'sine';
-            oscillator1.frequency.setValueAtTime(200, audioCtx.currentTime);
-            oscillator1.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.05);
-            
-            gainNode1.gain.setValueAtTime(0.4, audioCtx.currentTime);
-            gainNode1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-            
-            oscillator1.start();
-            oscillator1.stop(audioCtx.currentTime + 0.05);
-        }
-
-        // 충돌 감지 함수 수정
-        function collisionDetection() {
-            let remainingBricks = 0;
-            for(let c = 0; c < brickColumnCount; c++) {
-                for(let r = 0; r < brickRowCount; r++) {
-                    const b = bricks[c][r];
-                    if(b.status === 1) {
-                        remainingBricks++;
-                        balls.forEach(ball => {
-                            if(ball.x > b.x && 
-                               ball.x < b.x + brickWidth && 
-                               ball.y > b.y && 
-                               ball.y < b.y + brickHeight) {
-                                ball.dy = -ball.dy;
-                                b.status = 0;
-                                
-                                // 히트 사운드 재생
-                                createHitSound();
-                                
-                                const now = Date.now();
-                                if (now - lastHitTime <= comboTimeout) {
-                                    combo++;
-                                } else {
-                                    combo = 1;
-                                }
-                                lastHitTime = now;
-                                
-                                const comboScore = 10 * combo;
-                                score += comboScore;
-                                scoreElement.textContent = score;
-                                
-                                createComboText(b.x + brickWidth/2, b.y, `+${comboScore}`);
-                                createParticles(b.x + brickWidth/2, b.y + brickHeight/2, b.color);
-                                
-                                if(Math.random() < 0.1) {
-                                    createNewBall(b.x + brickWidth/2, b.y + brickHeight/2);
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-            
-            if(remainingBricks === 0) {
-                nextLevel();
-            }
-        }
-
-        // 메인 업데이트 함수
-        function update() {
-            if (!gameRunning || isPaused) return;
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 패들 이동
-            if(rightPressed && paddle.x < canvas.width - paddle.width) {
-                paddle.x += paddle.speed;
-            }
-            if(leftPressed && paddle.x > 0) {
-                paddle.x -= paddle.speed;
-            }
-
-            let allBallsLost = true;  // 모든 공이 화면 밖으로 나갔는지 확인하는 플래그
-
-            // 공 업데이트
-            for(let i = balls.length - 1; i >= 0; i--) {
-                const ball = balls[i];
-                
-                // 다음 위치 계산
-                let nextX = ball.x + ball.dx;
-                let nextY = ball.y + ball.dy;
-
-                // 벽 충돌 개선
-                if(nextX + ball.size > canvas.width) {
-                    ball.x = canvas.width - ball.size;
-                    ball.dx = -Math.abs(ball.dx);
-                    if(Math.abs(ball.dy) < 1) {
-                        ball.dy = (Math.random() * 2 - 1) * ball.speed;
-                    }
-                } else if(nextX - ball.size < 0) {
-                    ball.x = ball.size;
-                    ball.dx = Math.abs(ball.dx);
-                    if(Math.abs(ball.dy) < 1) {
-                        ball.dy = (Math.random() * 2 - 1) * ball.speed;
-                    }
-                } else {
-                    ball.x = nextX;
-                }
-
-                if(nextY - ball.size < 0) {
-                    ball.y = ball.size;
-                    ball.dy = Math.abs(ball.dy);
-                    if(Math.abs(ball.dx) < 1) {
-                        ball.dx = (Math.random() * 2 - 1) * ball.speed;
-                    }
-                } else {
-                    ball.y = nextY;
-                }
-
-                // 패들 충돌 개선
-                if(ball.y + ball.size > paddle.y && 
-                   ball.y < paddle.y + paddle.height &&
-                   ball.x > paddle.x - ball.size && 
-                   ball.x < paddle.x + paddle.width + ball.size) {
-                    ball.y = paddle.y - ball.size;
-                    ball.dy = -ball.speed;
-                    const paddleCenter = paddle.x + paddle.width/2;
-                    const ballDistFromCenter = ball.x - paddleCenter;
-                    ball.dx = ballDistFromCenter * 0.15;
-                    
-                    if(Math.abs(ball.dx) < 1) {
-                        ball.dx = ball.dx > 0 ? 1 : -1;
-                    }
-                }
-
-                // 바닥 충돌 수정
-                if(ball.y + ball.size > canvas.height) {
-                    balls.splice(i, 1);
-                    continue;  // 다음 공 처리로 넘어감
-                }
-
-                // 하나라도 살아있는 공이 있다면 플래그를 false로 설정
-                allBallsLost = false;
-            }
-
-            // 모든 공이 없어졌을 때만 게임 오버
-            if(balls.length === 0 && allBallsLost) {
-                gameOver();
-                return;
-            }
-
-            collisionDetection();
-            updateParticles();
-            updateComboTexts();
-
-            drawBricks();
-            drawBall();
-            drawPaddle();
-            drawParticles();
-            drawComboTexts();
-
-            // 콤보와 레벨 표시 업데이트
-            comboElement.textContent = combo;
-            levelElement.textContent = gameProgress;
-
-            animationId = requestAnimationFrame(update);
-        }
-
-        // UI 업데이트 함수
-        function updateGameUI() {
-            if (scoreElement) scoreElement.textContent = score;
-            if (comboElement) comboElement.textContent = combo;
-            if (levelElement) levelElement.textContent = gameProgress;
-        }
-
-        // 설정 관련 함수들
-        function openSettings() {
-            document.getElementById('settingsPanel').classList.add('active');
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('gameCanvas').classList.add('blur-background');
-            
-            // 게임이 실행 중일 때만 일시정지
-            if (gameRunning && !isPaused) {
-                isPaused = true;
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
-            }
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsPanel').classList.remove('active');
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('gameCanvas').classList.remove('blur-background');
-            
-            // 게임이 실행 중이고 일시정지 화면이 표시되어 있다면 일시정지 상태 유지
-            if (gameRunning && pauseScreen.style.display === 'block') {
-                isPaused = true;
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
-            }
-            // 일시정지 화면이 없는 경우에만 게임 재개
-            else if (gameRunning) {
-                isPaused = false;
-                if (!animationId) {
-                    animationId = requestAnimationFrame(update);
-                }
-            }
-        }
-
-        // 설정 즉시 적용 함수들
-        function updateColorSettings() {
-            const r = document.getElementById('redSlider').value;
-            const g = document.getElementById('greenSlider').value;
-            const b = document.getElementById('blueSlider').value;
-            const color = `rgb(${r}, ${g}, ${b})`;
-            const hexColor = `#${Number(r).toString(16).padStart(2, '0')}${Number(g).toString(16).padStart(2, '0')}${Number(b).toString(16).padStart(2, '0')}`.toUpperCase();
-            
-            document.getElementById('colorPreview').style.backgroundColor = color;
-            document.getElementById('colorValue').textContent = hexColor;
-
-            // 블록 색상 즉시 업데이트
-            const baseColor = [parseInt(r), parseInt(g), parseInt(b)];
-            updateBlockColors(baseColor);
-        }
-
-        function updateVolumeSettings() {
-            const volume = document.getElementById('volumeControl').value;
-            document.getElementById('volumeValue').textContent = volume;
-            // 여기에 볼륨 적용 로직 추가
-        }
-
-        function updateBlockColors(baseColor) {
-            for(let c = 0; c < brickColumnCount; c++) {
-                for(let r = 0; r < brickRowCount; r++) {
-                    if(bricks[c][r] && bricks[c][r].status === 1) {
-                        const [red, green, blue] = getRandomColorInRange(baseColor);
-                        bricks[c][r].color = `rgb(${red}, ${green}, ${blue})`;
-                    }
-                }
-            }
-        }
-
-        // 이벤트 리스너 추가
-        document.getElementById('redSlider').addEventListener('input', updateColorSettings);
-        document.getElementById('greenSlider').addEventListener('input', updateColorSettings);
-        document.getElementById('blueSlider').addEventListener('input', updateColorSettings);
-        
-        document.getElementById('volumeControl').addEventListener('input', updateVolumeSettings);
-
-        // 초기 설정
-        updateColorSettings();
-
-        // 전체화면 토글 함수
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`전체화면 에러: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-        }
-
-        // 전체화면 상태 변경 감지
-        document.addEventListener('fullscreenchange', () => {
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            if (document.fullscreenElement) {
-                fullscreenBtn.textContent = 'EXIT FULLSCREEN';
-            } else {
-                fullscreenBtn.textContent = 'FULLSCREEN';
-            }
-        });
-
-        // 초기화 실행
-        initializeAvailableLevels();
-        updateGameUI();
-
-        // 버튼 이벤트 리스너 추가
-        document.addEventListener('DOMContentLoaded', () => {
-            // 시작 버튼에 대한 추가 이벤트 리스너
-            const startBtn = document.getElementById('startGameBtn');
-            if (startBtn) {
-                startBtn.addEventListener('click', startGame);
-            }
-        });
-
-        // startGame 함수 수정
-        function startGame() {
-            console.log("Game Starting..."); // 디버깅용
-            resetGame();
-            initializeBricks(currentLevel); // 블록 초기화 추가
-            
-            gameRunning = true;
-            isPaused = false;
-            document.getElementById('menuScreen').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('gameCanvas').classList.remove('blur-background');
-            
-            // requestAnimationFrame 취소 및 초기화
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-                animationId = null;
-            }
-            
-            // 새로운 애니메이션 프레임 시작
-            animationId = requestAnimationFrame(update);
-            
-            // 게임 시작하고 100ms 후에 자동 일시정지
-            setTimeout(() => {
-                console.log("Auto-pausing..."); // 디버깅용
-                isPaused = true;
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
-                
-                // 10ms 후에 자동으로 다시 시작
-                setTimeout(() => {
-                    console.log("Auto-resuming..."); // 디버깅용
-                    if (gameRunning) {  // 게임이 여전히 실행 중인지 확인
-                        isPaused = false;
-                        if (!animationId) {  // animationId가 없을 때만 새로 시작
-                            animationId = requestAnimationFrame(update);
-                        }
-                    }
-                }, 10);
-            }, 100);
-        }
-
-        // initializeBricks 함수 확인
-        function initializeBricks(level) {
-            console.log("Initializing bricks for level:", level);
-            const pattern = levelPatterns.get(level);
-            
-            for(let c = 0; c < brickColumnCount; c++) {
-                bricks[c] = [];
-                for(let r = 0; r < brickRowCount; r++) {
-                    if(pattern[r][c] === 1) {
-                        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-                        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-                        bricks[c][r] = {
-                            x: brickX,
-                            y: brickY,
-                            status: 1,
-                            color: greenColors[Math.floor(Math.random() * greenColors.length)]
-                        };
-                    } else {
-                        bricks[c][r] = { status: 0 };
-                    }
-                }
-            }
-        }
-    </script>
 </body>
 </html>
