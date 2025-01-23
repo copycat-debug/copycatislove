@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIM TRAINER</title>
+    <style>
+        :root {
+            --primary: #f31260;
+            --primary-dark: #db0d56;
+            --secondary: #2d2d2d;
+            --accent: #00ff9f;
+            --danger: #ff0044;
+            --text: #ffffff;
+            --text-secondary: #b3b3b3;
+            --bg: #0a0a0a;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --border: rgba(243, 18, 96, 0.2);
+            --neon-shadow: 0 0 10px rgba(243, 18, 96, 0.5);
+            --gradient-1: linear-gradient(45deg, var(--primary), #ff6b6b);
+            --gradient-2: linear-gradient(135deg, var(--accent), #00b8ff);
+            --accent1: #ff0044;    /* 빨간색 */
+            --accent2: #ff6b6b;    /* 연한 빨간색 */
+            --accent3: #ff3366;    /* 분홍빛 빨간색 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rajdhani', system-ui, sans-serif;
+            user-select: none;  /* 텍스트 선택 방지 */
+            -webkit-user-select: none;  /* Safari용 */
+            -moz-user-select: none;     /* Firefox용 */
+            -ms-user-select: none;      /* IE용 */
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: var(--text);
+            overflow: hidden;
+            cursor: crosshair;
+            background-image: 
+                linear-gradient(to right, rgba(243, 18, 96, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(243, 18, 96, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .menu-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 400px;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--neon-shadow);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(243, 18, 96, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
+        }
+
+        .menu-title {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 2.5rem;
+            text-shadow: 0 0 20px rgba(243, 18, 96, 0.3);
+        }
+
+        .settings-group {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .settings-group:hover {
+            transform: translateY(-2px);
+        }
+
+        .settings-label {
+            display: block;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="range"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(243, 18, 96, 0.2);
+            border-radius: 2px;
+            outline: none;
+            margin-bottom: 1rem;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .btn {
+            background: rgba(243, 18, 96, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(243, 18, 96, 0.3);
+            box-shadow: 0 0 20px rgba(243, 18, 96, 0.2);
+            transition: all 0.3s ease;
+            color: var(--primary);
+            padding: 0.6rem 1rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            min-width: 120px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: var(--gradient-1);
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(243, 18, 96, 0.4);
+            color: var(--text);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .hud {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 2rem;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(243, 18, 96, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(243, 18, 96, 0.2);
+        }
+
+        .hud-item {
+            text-align: center;
+        }
+
+        .hud-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .hud-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(0, 255, 159, 0.5);
+        }
+
+        @keyframes targetPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes targetRing {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0; }
+        }
+
+        @keyframes targetHit {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        @keyframes targetFadeOut {
+            0% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.5);
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(2);
+            }
+        }
+
+        .target {
+            position: absolute;
+            border-radius: 50%;
+            cursor: crosshair;
+            transition: all 0.3s ease;
+            background: radial-gradient(circle at center, rgba(243, 18, 96, 0.2), transparent);
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 20px var(--primary),
+                        inset 0 0 15px var(--primary);
+            animation: targetPulse 2s infinite;
+        }
+
+        .target::before,
+        .target::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: targetRing 1.5s infinite;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .target::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .target::after {
+            width: 40%;
+            height: 40%;
+            border-width: 1px;
+        }
+
+        .target-crosshair-h,
+        .target-crosshair-v {
+            position: absolute;
+            background: currentColor;
+            opacity: 0.7;
+        }
+
+        .target-crosshair-h {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .target-crosshair-v {
+            width: 1px;
+            height: 100%;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+        }
+
+        .target-hit {
+            animation: targetHit 0.3s ease-out forwards;
+        }
+
+        .target-fade {
+            animation: targetFadeOut 0.5s ease-out forwards;
+        }
+
+        .target-timer {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(243, 18, 96, 0.5);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(20, 20, 20, 0.95);
+            padding: 2rem;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            border-left: 1px solid var(--border);
+            backdrop-filter: blur(15px);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        /* Webkit 브라우저용 스크롤바 스타일 */
+        .settings-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .settings-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .settings-panel::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 4px;
+            border: 2px solid transparent;
+        }
+
+        .settings-panel.active {
+            right: 0;
+        }
+
+        .settings-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .difficulty-btn {
+            width: 100%;
+            margin-bottom: 0.4rem;
+            padding: 0.6rem;
+            border-radius: 0.4rem;
+        }
+
+        #settingsBtn {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
+        .start-target {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .start-target::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30%;
+            height: 30%;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+        }
+
+        .start-target::after {
+            content: 'CLICK TO START';
+            position: absolute;
+            top: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .time-display {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 159, 0.3);
+        }
+
+        #settingsTargetCountDisplay {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 159, 0.3);
+        }
+
+        @keyframes fadeUpAndOut {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .confirm-target {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: radial-gradient(circle at center, rgba(243, 18, 96, 0.2), transparent);
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 20px var(--primary), inset 0 0 15px var(--primary);
+            animation: targetPulse 2s infinite;
+        }
+
+        .confirm-target::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(243, 18, 96, 0.5);
+        }
+
+        .confirm-message {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(243, 18, 96, 0.5);
+            text-align: center;
+            display: none;
+        }
+
+        .menu-buttons {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: transparent;
+            color: var(--accent2);
+            border: 2px solid var(--accent2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            font-family: system-ui, sans-serif;
+        }
+
+        .menu-btn:hover {
+            background: var(--accent2);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--accent2);
+            transform: scale(1.05);
+        }
+
+        .menu-btn.home {
+            color: var(--accent1);
+            border-color: var(--accent1);
+        }
+
+        .menu-btn.home:hover {
+            background: var(--accent1);
+            box-shadow: 0 0 20px var(--accent1);
+        }
+
+        .menu-btn.number {
+            color: var(--accent3);
+            border-color: var(--accent3);
+        }
+
+        .menu-btn.number:hover {
+            background: var(--accent3);
+            box-shadow: 0 0 20px var(--accent3);
+        }
+
+        .btn-large {
+            width: 100%;
+            max-width: 300px;
+            padding: 1.5rem;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-1);
+            color: var(--text);
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0.5rem;
+        }
+
+        .btn-large:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(243, 18, 96, 0.6);
+        }
+
+        .color-slider-group {
+            margin-bottom: 0.8rem;
+        }
+
+        .color-slider {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0.8rem auto;
+            border: 2px solid var(--border);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* RGB 슬라이더 스타일 */
+        input[type="range"].red-slider::-webkit-slider-thumb {
+            background: #ff0000;
+        }
+        input[type="range"].green-slider::-webkit-slider-thumb {
+            background: #00ff00;
+        }
+        input[type="range"].blue-slider::-webkit-slider-thumb {
+            background: #0000ff;
+        }
+
+        .color-value {
+            font-family: monospace;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .btn-start {
+            background: var(--gradient-1);
+            color: var(--text);
+        }
+
+        .btn-fullscreen {
+            background: transparent;
+            color: var(--accent2);
+            border: 2px solid var(--accent2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            font-family: system-ui, sans-serif;
+        }
+
+        .btn-fullscreen:hover {
+            background: var(--accent2);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--accent2);
+            transform: scale(1.05);
+        }
+    </style>
+    <audio id="hitSound" preload="auto">
+        <source src="data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAFAAAGUACFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFra2tra2tra2tra2tra2tra2tra2traGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaH///////////////////////////////////////////8AAAAKTEFNRTMuMTAwBEgAAAAAAAAAABUgJAMGQQABmgAABlAIE8XVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQxAADwAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAzVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQxBWDwAABpAAAACAAADSAAAAEAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+    </audio>
+</head>
+<body>
+    <div class="game-container">
+        <div class="menu-screen" id="menuScreen">
+            <h1 class="menu-title">AIM TRAINER</h1>
+            <div class="settings-group">
+                <button class="btn btn-large btn-start" onclick="startGame()">START GAME</button>
+                <button class="btn btn-large btn-fullscreen" onclick="toggleFullscreen()">FULLSCREEN</button>
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">CONTROLS</label>
+                <div style="color: var(--text-secondary); font-size: 0.9rem; text-align: left; margin-top: 0.5rem;">
+                    <div>• Click targets as fast as possible</div>
+                    <div>• Press <span style="color: var(--primary)">ESC</span> to pause</div>
+                    <div>• Press <span style="color: var(--primary)">R</span> to restart</div>
+                    <div>• Press <span style="color: var(--primary)">S</span> for settings</div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <button class="btn" onclick="location.href='index.html'">BACK TO MENU</button>
+            </div>
+        </div>
+
+        <div class="start-target" onclick="startGamePlay()" style="display: none;"></div>
+
+        <div class="hud">
+            <div class="hud-item">
+                <div class="hud-label">Score</div>
+                <div class="hud-value" id="score">0</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">Time</div>
+                <div class="hud-value" id="timer">60</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">Accuracy</div>
+                <div class="hud-value" id="accuracy">100%</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">Difficulty</div>
+                <div class="hud-value" id="difficulty">NORMAL</div>
+            </div>
+        </div>
+
+        <button id="settingsBtn" class="btn" onclick="openSettings()">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+
+        <div class="settings-panel" id="settingsPanel">
+            <h2 class="settings-title">Settings</h2>
+            <div class="settings-group">
+                <button class="btn btn-accent" onclick="applySettings()">APPLY</button>
+                <button class="btn btn-danger" onclick="closeSettings()">CANCEL</button>
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">Practice Time</label>
+                <input type="range" id="settingsTimeRange" min="10" max="300" step="10" value="30">
+                <div class="time-display" id="settingsTimeDisplay">30 SEC</div>
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">Difficulty</label>
+                <button class="btn difficulty-btn" onclick="changeDifficulty('easy')">EASY</button>
+                <button class="btn difficulty-btn" onclick="changeDifficulty('normal')">NORMAL</button>
+                <button class="btn difficulty-btn" onclick="changeDifficulty('hard')">HARD</button>
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">Display</label>
+                <button class="btn difficulty-btn" onclick="toggleFullscreen()">FULLSCREEN</button>
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">Target Count</label>
+                <input type="range" id="settingsTargetCount" min="1" max="10" value="3">
+                <div id="settingsTargetCountDisplay">3 TARGETS</div>
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">Sound Volume</label>
+                <input type="range" id="settingsVolume" min="0" max="100" value="50">
+                <div id="settingsVolumeDisplay" class="time-display">50%</div>
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">Target Color</label>
+                <div class="color-preview" id="colorPreview"></div>
+                <div class="color-slider-group">
+                    <label>R</label>
+                    <input type="range" class="color-slider red-slider" id="redSlider" min="0" max="255" value="243">
+                </div>
+                <div class="color-slider-group">
+                    <label>G</label>
+                    <input type="range" class="color-slider green-slider" id="greenSlider" min="0" max="255" value="18">
+                </div>
+                <div class="color-slider-group">
+                    <label>B</label>
+                    <input type="range" class="color-slider blue-slider" id="blueSlider" min="0" max="255" value="96">
+                </div>
+                <div class="color-value" id="colorValue">#F31260</div>
+            </div>
+        </div>
+
+        <div class="overlay" id="overlay"></div>
+    </div>
+
+    <script>
+        // 게임 상태 변수
+        let isGameRunning = false;
+        let isSettingsOpen = false;
+        let isPaused = false;
+        let score = 0;
+        let hits = 0;
+        let shots = 0;
+        let initialTime = 30;
+        let timeLeft = initialTime;
+        let gameInterval;
+        let currentTargets = 0;
+        let currentDifficulty = 'easy';
+
+        // 난이도 설정
+        const difficultySettings = {
+            easy: { targetSize: 80, duration: 2500, points: 0, name: 'EASY' },
+            normal: { targetSize: 60, duration: 2500, points: 0, name: 'NORMAL' },
+            hard: { targetSize: 40, duration: 2500, points: 0, name: 'HARD' }
+        };
+
+        // 오디오 컨텍스트 생성
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        // 전역 볼륨 컨트롤을 위한 마스터 게인 노드 생성
+        const masterGainNode = audioCtx.createGain();
+        masterGainNode.connect(audioCtx.destination);
+        masterGainNode.gain.setValueAtTime(0.5, audioCtx.currentTime); // 기본값 50%
+
+        // 볼륨 조절 함수
+        function updateVolume(value) {
+            const volume = value / 100; // 0-100 범위를 0-1로 변환
+            masterGainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+            document.getElementById('settingsVolumeDisplay').textContent = `${value}%`;
+        }
+
+        // 볼륨 슬라이더 이벤트 리스너
+        document.getElementById('settingsVolume').addEventListener('input', (e) => {
+            updateVolume(e.target.value);
+            createSettingChangeSound();
+        });
+
+        // 모든 사운드 함수 수정 - destination 대신 masterGainNode에 연결
+        function createHitSound() {
+            // 메인 임팩트 사운드
+            const oscillator1 = audioCtx.createOscillator();
+            const gainNode1 = audioCtx.createGain();
+            
+            oscillator1.connect(gainNode1);
+            gainNode1.connect(masterGainNode); // destination 대신 masterGainNode에 연결
+            
+            oscillator1.type = 'sine';
+            oscillator1.frequency.setValueAtTime(200, audioCtx.currentTime);
+            oscillator1.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.05);
+            
+            gainNode1.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gainNode1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            
+            oscillator1.start();
+            oscillator1.stop(audioCtx.currentTime + 0.05);
+        }
+
+        // 게임 시작 사운드
+        function createStartSound() {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(masterGainNode);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.2);
+        }
+
+        // 게임 오버 사운드
+        function createGameOverSound() {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(masterGainNode);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.5);
+            
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.5);
+        }
+
+        // 타겟 놓침 사운드
+        function createMissSound() {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(masterGainNode);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1);
+        }
+
+        // 버튼 클릭 사운드
+        function createButtonClickSound() {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(masterGainNode);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+            
+            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.05);
+        }
+
+        // 호버 사운드 (부드러운 소리)
+        function createHoverSound() {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(masterGainNode);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime);
+            
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // 매우 작은 볼륨
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.05);
+        }
+
+        // 설정 변경 사운드 (슬라이더 등)
+        function createSettingChangeSound() {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(masterGainNode);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1);
+        }
+
+        // 초기화 함수
+        function initializeSettings() {
+            const targetCountSlider = document.getElementById('settingsTargetCount');
+            const targetCountDisplay = document.getElementById('settingsTargetCountDisplay');
+            const timeRangeSlider = document.getElementById('settingsTimeRange');
+            const timeDisplay = document.getElementById('settingsTimeDisplay');
+
+            targetCountSlider.addEventListener('input', function() {
+                const count = parseInt(this.value);
+                targetCountDisplay.textContent = `${count} TARGET${count > 1 ? 'S' : ''}`;
+            });
+
+            timeRangeSlider.addEventListener('input', function() {
+                const seconds = parseInt(this.value);
+                timeDisplay.textContent = `${seconds} SEC`;
+            });
+
+            // EASY 버튼 초기 스타일 설정
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.style.background = 'transparent';
+                btn.style.color = 'var(--primary)';
+            });
+            const easyButton = document.querySelector('.difficulty-btn[onclick="changeDifficulty(\'easy\')"]');
+            if (easyButton) {
+                easyButton.style.background = 'var(--primary)';
+                easyButton.style.color = 'var(--text)';
+            }
+        }
+
+        // 게임 시작 함수 수정
+        function startGame() {
+            createStartSound();
+            document.querySelector('.hud').style.display = 'none';  // HUD 숨기기
+            document.getElementById('menuScreen').style.display = 'none';
+            document.getElementById('settingsBtn').style.display = 'block';
+            
+            // CLICK TO START 타겟 표시
+            document.querySelector('.start-target').style.display = 'block';
+        }
+
+        // 실제 게임 시작을 위한 새로운 함수
+        function startGamePlay() {
+            document.querySelector('.start-target').style.display = 'none';
+            
+            // 카운트다운 메시지 생성
+            const countdownMessage = document.createElement('div');
+            countdownMessage.className = 'confirm-message';
+            countdownMessage.style.display = 'block';
+            document.querySelector('.game-container').appendChild(countdownMessage);
+            
+            // 3, 2, 1 카운트다운
+            let count = 3;
+            const countdown = setInterval(() => {
+                if (count > 0) {
+                    countdownMessage.textContent = count;
+                    createButtonClickSound();
+                    count--;
+                } else {
+                    clearInterval(countdown);
+                    countdownMessage.textContent = 'START!';
+                    startActualGame(); // 여기서 바로 게임 시작
+                    
+                    // START! 메시지는 1초 후에 제거
+                    setTimeout(() => {
+                        countdownMessage.remove();
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        function startActualGame() {
+            document.querySelector('.hud').style.display = 'flex';
+            
+            isGameRunning = true;
+            score = 0;
+            hits = 0;
+            shots = 0;
+            timeLeft = initialTime;
+            currentTargets = 0;
+            
+            updateHUD();
+            
+            let lastTime = Date.now();
+            gameInterval = setInterval(() => {
+                if (!isPaused) {
+                    const currentTime = Date.now();
+                    const deltaTime = (currentTime - lastTime) / 1000;
+                    timeLeft -= deltaTime;
+                    lastTime = currentTime;
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    } else {
+                        updateHUD();
+                    }
+                }
+            }, 100);
+
+            const targetCount = parseInt(document.getElementById('settingsTargetCount').value) || 1;
+            for (let i = 0; i < targetCount; i++) {
+                createTarget();
+            }
+        }
+
+        // 타겟 생성 함수
+        function createTarget() {
+            if (!isGameRunning) return;
+
+            const target = document.createElement('div');
+            target.className = 'target';
+            
+            const timer = document.createElement('div');
+            timer.className = 'target-timer';
+            timer.textContent = '2.5';
+            target.appendChild(timer);
+            
+            target.dataset.createTime = Date.now();
+            target.dataset.pausedTime = '0'; // 일시정지된 시간을 추적하기 위한 데이터 속성
+            
+            const size = difficultySettings[currentDifficulty].targetSize;
+            target.style.width = size + 'px';
+            target.style.height = size + 'px';
+
+            const maxX = window.innerWidth - size;
+            const maxY = window.innerHeight - size;
+            const minY = 100;
+            const x = Math.random() * maxX;
+            const y = minY + (Math.random() * (maxY - minY));
+            
+            target.style.left = x + 'px';
+            target.style.top = y + 'px';
+
+            target.onclick = () => hitTarget(target);
+            
+            document.querySelector('.game-container').appendChild(target);
+            currentTargets++;
+
+            let timeLeft = 2.5;
+            let timerInterval = setInterval(() => {
+                if (!isPaused) {
+                    timeLeft -= 0.1;
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        if (target.parentNode && !isPaused) {
+                            createMissSound();  // 타겟 시간 초과시 사운드
+                            score = Math.max(0, score - 30);
+                            // 감점 표시 애니메이션
+                            const penaltyDisplay = document.createElement('div');
+                            penaltyDisplay.textContent = '-30';
+                            penaltyDisplay.style.position = 'absolute';
+                            penaltyDisplay.style.left = target.style.left;
+                            penaltyDisplay.style.top = target.style.top;
+                            penaltyDisplay.style.color = '#ff3366';
+                            penaltyDisplay.style.fontSize = '1.2rem';
+                            penaltyDisplay.style.fontWeight = 'bold';
+                            penaltyDisplay.style.animation = 'fadeUpAndOut 1s forwards';
+                            penaltyDisplay.style.zIndex = '1000';
+                            document.querySelector('.game-container').appendChild(penaltyDisplay);
+                            
+                            updateHUD();
+                            target.classList.add('target-fade');
+                            setTimeout(() => {
+                                if (target.parentNode) {
+                                    target.remove();
+                                    penaltyDisplay.remove();
+                                    currentTargets--;
+                                    if (isGameRunning && !isPaused) { // 일시정지 상태가 아닐 때만 새 타겟 생성
+                                        createTarget();
+                                    }
+                                }
+                            }, 500);
+                        }
+                    } else {
+                        timer.textContent = timeLeft.toFixed(1);
+                    }
+                }
+            }, 100);
+
+            // 타이머 인터벌을 타겟에 저장 (일시정지에서 사용)
+            target.dataset.timerInterval = timerInterval;
+        }
+
+        // 타겟 히트 함수
+        function hitTarget(target) {
+            if (isPaused) return;
+            
+            // 효과음 재생
+            createHitSound();
+            
+            hits++;
+            shots++;
+            const timeBonus = calculateTimeBonus(target);
+            score += timeBonus;
+            
+            // 점수 표시 애니메이션
+            const bonusDisplay = document.createElement('div');
+            bonusDisplay.textContent = `+${timeBonus}`; // 양수 점수는 초록색으로
+            bonusDisplay.style.position = 'absolute';
+            bonusDisplay.style.left = target.style.left;
+            bonusDisplay.style.top = target.style.top;
+            bonusDisplay.style.color = '#00ff9f'; // 초록색
+            bonusDisplay.style.fontSize = '1.2rem';
+            bonusDisplay.style.fontWeight = 'bold';
+            bonusDisplay.style.animation = 'fadeUpAndOut 1s forwards';
+            bonusDisplay.style.zIndex = '1000';
+            document.querySelector('.game-container').appendChild(bonusDisplay);
+            
+            target.onclick = null;
+            target.classList.add('target-hit');
+            
+            setTimeout(() => {
+                target.remove();
+                bonusDisplay.remove();
+                currentTargets--;
+                if (isGameRunning && !isPaused) { // 일시정지 상태가 아닐 때만 새 타겟 생성
+                    createTarget();
+                }
+            }, 300);
+            
+            updateHUD();
+        }
+
+        // 시간 보너스 계산 함수 수정
+        function calculateTimeBonus(target) {
+            const hitTime = Date.now();
+            const createTime = parseInt(target.dataset.createTime);
+            const reactionTime = (hitTime - createTime) / 1000;
+            const bonus = Math.max(0, Math.floor(100 * (1 - reactionTime / 2.5)));
+            return bonus;
+        }
+
+        // HUD 업데이트 함수 수정
+        function updateHUD() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('timer').textContent = Math.max(0, timeLeft).toFixed(1);
+            const accuracy = shots === 0 ? 0 : Math.round((hits / shots) * 100);
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            document.getElementById('difficulty').textContent = 
+                difficultySettings[currentDifficulty].name;
+        }
+
+        // 게임 종료
+        function endGame() {
+            createGameOverSound();
+            isGameRunning = false;
+            clearInterval(gameInterval);
+            document.querySelectorAll('.target').forEach(target => target.remove());
+            document.querySelector('.hud').style.display = 'none';
+            
+            // 결과 화면 생성
+            const resultScreen = document.createElement('div');
+            resultScreen.className = 'menu-screen';
+            resultScreen.innerHTML = `
+                <h1 class="menu-title">GAME OVER</h1>
+                <div class="settings-group">
+                    <div style="color: var(--text); font-size: 1.5rem; text-align: center; margin: 2rem 0;">
+                        <div style="margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
+                            <span style="color: var(--text-secondary); letter-spacing: 2px;">SCORE:</span>
+                            <span style="color: #00ffff; font-weight: bold; font-size: 2rem; margin-left: 3rem;">${score}</span>
+                        </div>
+                        <div style="margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
+                            <span style="color: var(--text-secondary); letter-spacing: 2px;">ACCURACY:</span>
+                            <span style="color: #00ffff; font-weight: bold; font-size: 2rem; margin-left: 3rem;">${document.getElementById('accuracy').textContent}</span>
+                        </div>
+                        <div style="margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
+                            <span style="color: var(--text-secondary); letter-spacing: 2px;">DIFFICULTY:</span>
+                            <span style="color: var(--accent); font-weight: bold; font-size: 2rem; margin-left: 3rem;">${difficultySettings[currentDifficulty].name}</span>
+                        </div>
+                        <div style="margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
+                            <span style="color: var(--text-secondary); letter-spacing: 2px;">TARGETS:</span>
+                            <span style="color: var(--accent); font-weight: bold; font-size: 2rem; margin-left: 3rem;">${document.getElementById('settingsTargetCount').value}</span>
+                        </div>
+                        <div style="margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
+                            <span style="color: var(--text-secondary); letter-spacing: 2px;">TIME:</span>
+                            <span style="color: var(--accent); font-weight: bold; font-size: 2rem; margin-left: 3rem;">${initialTime}s</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <button class="btn" onclick="resetGame()">RESTART</button>
+                    <button class="btn" onclick="location.href='index.html'">BACK TO MENU</button>
+                </div>
+            `;
+            
+            document.querySelector('.game-container').appendChild(resultScreen);
+            document.getElementById('settingsBtn').style.display = 'block';
+        }
+
+        // 게임 리셋
+        function resetGame() {
+            clearInterval(gameInterval);
+            document.querySelectorAll('.target').forEach(target => target.remove());
+            document.querySelectorAll('.confirm-message').forEach(msg => msg.remove());
+            // 게임 오버 화면 제거
+            const resultScreen = document.querySelector('.menu-screen:not(#menuScreen)');
+            if (resultScreen) {
+                resultScreen.remove();
+            }
+            
+            isGameRunning = false;
+            score = 0;
+            hits = 0;
+            shots = 0;
+            timeLeft = initialTime;
+            currentTargets = 0;
+            
+            document.querySelector('.hud').style.display = 'none';
+            document.querySelector('.start-target').style.display = 'none';
+            document.getElementById('menuScreen').style.display = 'block';
+            document.getElementById('settingsBtn').style.display = 'block';
+        }
+
+        // 설정 관련 함수들
+        function openSettings() {
+            createButtonClickSound();
+            document.getElementById('settingsPanel').classList.add('active');
+            document.getElementById('overlay').style.display = 'block';
+            isSettingsOpen = true;
+            initializeSettings();
+        }
+
+        function closeSettings() {
+            createButtonClickSound();
+            document.getElementById('settingsPanel').classList.remove('active');
+            document.getElementById('overlay').style.display = 'none';
+            isSettingsOpen = false;
+        }
+
+        function applySettings() {
+            createButtonClickSound();
+            initialTime = parseInt(document.getElementById('settingsTimeRange').value);
+            timeLeft = initialTime;
+            
+            if (isGameRunning) {
+                isGameRunning = false;
+                clearInterval(gameInterval);
+                document.querySelectorAll('.target').forEach(target => target.remove());
+                document.querySelector('.hud').style.display = 'none';
+                document.querySelector('.start-target').style.display = 'block';
+            }
+            
+            // 컬러 설정 적용
+            const r = document.getElementById('redSlider').value;
+            const g = document.getElementById('greenSlider').value;
+            const b = document.getElementById('blueSlider').value;
+            const color = `rgb(${r}, ${g}, ${b})`;
+            document.documentElement.style.setProperty('--primary', color);
+
+            closeSettings();
+        }
+
+        function changeDifficulty(difficulty) {
+            createSettingChangeSound();
+            currentDifficulty = difficulty;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.style.background = 'transparent';
+                btn.style.color = 'var(--primary)';
+            });
+            event.target.style.background = 'var(--primary)';
+            event.target.style.color = 'var(--text)';
+        }
+
+        // 키보드 이벤트 리스너 수정
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (isSettingsOpen) {
+                    // 설정 패널이 열려있으면 닫기
+                    closeSettings();
+                } else if (isGameRunning) {
+                    // 게임 중이면 메뉴로 돌아가기
+                    isGameRunning = false;
+                    clearInterval(gameInterval);
+                    document.querySelectorAll('.target').forEach(target => target.remove());
+                    document.querySelector('.hud').style.display = 'none';
+                    document.querySelector('.start-target').style.display = 'none';
+                    document.getElementById('menuScreen').style.display = 'block';
+                    document.getElementById('settingsBtn').style.display = 'block';
+                    // 일시정지 메시지가 있다면 제거
+                    const pauseMessage = document.getElementById('pauseMessage');
+                    if (pauseMessage) pauseMessage.remove();
+                }
+            }
+            if (e.key.toLowerCase() === 'r') {
+                if (isGameRunning) {
+                    // R 키를 누르면 게임을 리셋하고 CLICK TO START 표시
+                    clearInterval(gameInterval);
+                    document.querySelectorAll('.target').forEach(target => target.remove());
+                    isGameRunning = false;
+                    isPaused = false;
+                    score = 0;
+                    hits = 0;
+                    shots = 0;
+                    timeLeft = initialTime;
+                    currentTargets = 0;
+                    
+                    document.querySelector('.hud').style.display = 'none';
+                    document.querySelector('.start-target').style.display = 'block';
+                    document.getElementById('menuScreen').style.display = 'none';
+                    document.getElementById('settingsBtn').style.display = 'block';
+                    // 일시정지 메시지가 있다면 제거
+                    const pauseMessage = document.getElementById('pauseMessage');
+                    if (pauseMessage) pauseMessage.remove();
+                    updateHUD();
+                }
+            }
+            if (e.key.toLowerCase() === 's') {
+                if (isSettingsOpen) {
+                    closeSettings();
+                } else {
+                    openSettings();
+                }
+            }
+        });
+
+        // 게임 컨테이너에 클릭 이벤트 리스너 추가
+        document.querySelector('.game-container').addEventListener('click', (e) => {
+            if (isGameRunning && !isPaused) {
+                if (e.target.classList.contains('game-container')) {
+                    shots++;
+                    createMissSound();  // 빗나갔을 때 사운드
+                    updateHUD();
+                }
+            }
+        });
+
+        // 모든 버튼에 클릭 사운드 추가
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                createButtonClickSound();
+            });
+        });
+
+        // 모든 버튼에 호버 사운드 추가
+        document.querySelectorAll('.btn, .difficulty-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                createHoverSound();
+            });
+            btn.addEventListener('click', () => {
+                createButtonClickSound();
+            });
+        });
+
+        // 설정 슬라이더에 사운드 추가
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', () => {
+                createSettingChangeSound();
+            });
+            slider.addEventListener('mouseenter', () => {
+                createHoverSound();
+            });
+        });
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', initializeSettings);
+
+        // RGB 컬러 관련 함수들
+        function updateColorPreview() {
+            const r = document.getElementById('redSlider').value;
+            const g = document.getElementById('greenSlider').value;
+            const b = document.getElementById('blueSlider').value;
+            const color = `rgb(${r}, ${g}, ${b})`;
+            const hexColor = `#${Number(r).toString(16).padStart(2, '0')}${Number(g).toString(16).padStart(2, '0')}${Number(b).toString(16).padStart(2, '0')}`.toUpperCase();
+            
+            document.getElementById('colorPreview').style.backgroundColor = color;
+            document.getElementById('colorValue').textContent = hexColor;
+            
+            // 미리보기 효과
+            document.documentElement.style.setProperty('--primary', color);
+        }
+
+        // RGB 슬라이더 이벤트 리스너
+        document.getElementById('redSlider').addEventListener('input', updateColorPreview);
+        document.getElementById('greenSlider').addEventListener('input', updateColorPreview);
+        document.getElementById('blueSlider').addEventListener('input', updateColorPreview);
+
+        // 초기 컬러 프리뷰 설정
+        updateColorPreview();
+
+        // 전체화면 토글 함수 추가
+        function toggleFullscreen() {
+            createButtonClickSound();
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`전체화면 에러: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // 전체화면 상태 변경 감지
+        document.addEventListener('fullscreenchange', () => {
+            const fullscreenBtn = document.querySelector('.btn-large[onclick="toggleFullscreen()"]');
+            const settingsFullscreenBtn = document.querySelector('.difficulty-btn[onclick="toggleFullscreen()"]');
+            
+            if (document.fullscreenElement) {
+                fullscreenBtn.textContent = 'EXIT FULLSCREEN';
+                settingsFullscreenBtn.textContent = 'EXIT FULLSCREEN';
+            } else {
+                fullscreenBtn.textContent = 'FULLSCREEN';
+                settingsFullscreenBtn.textContent = 'FULLSCREEN';
+            }
+        });
+    </script>
+</body>
+</html>
